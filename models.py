@@ -1,5 +1,6 @@
 from typing import Optional, List
-from sqlmodel import Relationship, SQLModel, Field, create_engine
+from sqlalchemy.ext.asyncio import create_async_engine
+from sqlmodel import Relationship, SQLModel, Field
 
 
 class ProjectSkillLink(SQLModel, table=True):
@@ -40,4 +41,4 @@ class TranslatedCountryName(SQLModel, table=True):
     country: Country = Relationship()
 
 
-engine = create_engine("sqlite:///db.sqlite3", echo=True, connect_args={"check_same_thread": False})
+engine = create_async_engine("sqlite+aiosqlite:///db.sqlite3", echo=True, connect_args={"check_same_thread": False})
