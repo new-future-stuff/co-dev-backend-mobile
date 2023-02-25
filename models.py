@@ -23,6 +23,7 @@ class Project(SQLModel, table=True):
 
 class Skill(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
+    name: str
     related_projects: List[Project] = Relationship(back_populates="required_skills", link_model=ProjectSkillLink)
 
 
