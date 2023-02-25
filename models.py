@@ -7,6 +7,11 @@ class ProjectSkillLink(SQLModel, table=True):
     skill_id: int = Field(foreign_key="skill.id", primary_key=True)
 
 
+class Language(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    name: str
+
+
 class Project(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str
@@ -23,7 +28,15 @@ class Skill(SQLModel, table=True):
 
 class Country(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
+
+
+class TranslatedCountryName(SQLModel, table=True):
+    country_id: int = Field(foreign_key="country.id", primary_key=True)
     name: str
+    language_id: int = Field(foreign_key="language.id", primary_key=True)
+
+    language: Language = Relationship()
+    country: Country = Relationship()
 
 
 engine = create_engine("sqlite:///db.sqlite3", echo=True, connect_args={"check_same_thread": False})

@@ -1,6 +1,8 @@
 from fastapi import APIRouter, HTTPException, status
 from typing import List
-from models import Project, engine, Country
+
+from pydantic import BaseModel
+from models import Language, Project, TranslatedCountryName, engine, Country
 from sqlmodel import Session, select
 
 router = APIRouter()
@@ -32,7 +34,19 @@ async def get_project(project_id: int) -> Project:
 
 
 @router.get("/countries")
-async def get_countries() -> List[Country]:
+async def get_countries(language_id: int) -> List[TranslatedCountryName]:
     with Session(engine) as session:
-        results = session.exec(select(Country)).all()
+        results = session.exec(
+            select(TranslatedCountryName)
+            .filter(TranslatedCountryName.language_id == language_id)
+        ).all()
+        if not results:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+        return results
+
+
+@router.get("/languages")
+async def get_languages() -> List[Language]:
+    with Session(engine) as session:
+        results = session.exec(select(Language)).all()
         return results
