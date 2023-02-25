@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, status
 from typing import List
 
 from pydantic import BaseModel
-from models import Language, Project, TranslatedCountryName, engine, Country
+from models import Language, Project, Skill, TranslatedCountryName, engine, Country
 from sqlmodel import Session, select
 
 router = APIRouter()
@@ -49,4 +49,11 @@ async def get_countries(language_id: int) -> List[TranslatedCountryName]:
 async def get_languages() -> List[Language]:
     with Session(engine) as session:
         results = session.exec(select(Language)).all()
+        return results
+
+
+@router.get("/skills")
+async def get_skills() -> List[Skill]:
+    with Session(engine) as session:
+        results = session.exec(select(Skill)).all()
         return results
