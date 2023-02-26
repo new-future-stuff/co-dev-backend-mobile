@@ -8,6 +8,7 @@ Create Date: 2023-02-26 00:14:22.039973
 from alembic import op
 import sqlalchemy as sa
 import models  # Loading the models into the SQLModel's metadata
+import sqlmodel.sql.sqltypes
 from sqlmodel import SQLModel
 
 

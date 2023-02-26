@@ -9,6 +9,7 @@ from alembic import op
 import sqlalchemy as sa
 import models  # Loading the models into the SQLModel's metadata
 from sqlmodel import SQLModel
+import sqlmodel.sql.sqltypes
 ${imports if imports else ""}
 
 # revision identifiers, used by Alembic.
