@@ -1,4 +1,3 @@
-import datetime
 from typing import Optional, List
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlmodel import Relationship, SQLModel, Field
@@ -7,10 +6,9 @@ from sqlmodel import Relationship, SQLModel, Field
 ID = int
 
 
-class Token(SQLModel, table=True):
-    owner_id: ID = Field(foreign_key="user.id")
-    contents: str = Field(unique=True)
-    expiration_date: datetime.datetime
+class UserSkillLink(SQLModel, table=True):
+    user_id: ID = Field(foreign_key="user.id", primary_key=True)
+    skill_id: ID = Field(foreign_key="skill.id", primary_key=True)
 
 
 class User(SQLModel, table=True):
@@ -20,11 +18,7 @@ class User(SQLModel, table=True):
     salt: bytes
     profile_picture_url: Optional[str]
     email: str = Field(unique=True, index=True)
-
-
-class UserSkillLink(SQLModel, table=True):
-    user_id: ID = Field(foreign_key="user.id", primary_key=True)
-    skill_id: ID = Field(foreign_key="skill.id", primary_key=True)
+    required_skills: List["Skill"] = Relationship(back_populates="users_with_the_skill", link_model=UserSkillLink)
 
 
 class ProjectSkillLink(SQLModel, table=True):
@@ -42,14 +36,17 @@ class Project(SQLModel, table=True):
     name: str
     description: str
     creator_id: ID = Field(foreign_key="user.id")
-    reward: str
+    reward: int
+    currency: str
     required_skills: List["Skill"] = Relationship(back_populates="related_projects", link_model=ProjectSkillLink)
+    logo_url: Optional[str]
 
 
 class Skill(SQLModel, table=True):
     id: Optional[ID] = Field(default=None, primary_key=True)
     name: str
     related_projects: List[Project] = Relationship(back_populates="required_skills", link_model=ProjectSkillLink)
+    users_with_the_skill: List[Project] = Relationship(back_populates="required_skills", link_model=ProjectSkillLink)
 
 
 class Country(SQLModel, table=True):

@@ -1,16 +1,11 @@
-import datetime
 from fastapi import APIRouter, HTTPException, status
 from typing import List, Optional
-import secrets
-from fastapi.responses import JSONResponse
 
 from pydantic import BaseModel
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
-from models import ID, Language, Project, Skill, Token, TranslatedCountryName, User, engine
+from models import ID, Language, Project, Skill, TranslatedCountryName, User, engine
 from sqlmodel import select
-
-import security
 
 router = APIRouter()
 
@@ -93,26 +88,6 @@ class SafeUserData(BaseModel):
         )
 
 
-@router.post("/users")
-async def create_user(user_registration_data: UserRegistrationData) -> SafeUserData:
-    salt = security.get_salt()
-    user = User(
-        name=user_registration_data.name,
-        hashed_password=security.encrypt_password(
-            password=user_registration_data.password,
-            salt=salt,
-        ),
-        salt=salt,
-        profile_picture_url=user_registration_data.profile_picture_url,
-        email=user_registration_data.email,
-    )
-    async with AsyncSession(engine) as session:
-        session.add(user)
-        await session.commit()
-        await session.refresh(user)
-    return SafeUserData.make_from_user(user)
-
-
 @router.get("/users")
 async def get_users() -> List[SafeUserData]:
     async with AsyncSession(engine) as session:
@@ -128,34 +103,3 @@ async def get_user(user_id: int) -> SafeUserData:
         except NoResultFound:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
         return SafeUserData.make_from_user(user)
-
-
-class UserAuthenticationData(BaseModel):
-    email: int
-    password: str
-
-
-TOKEN_EXPIRATION_TIME = datetime.timedelta(days=7)
-
-
-@router.post("/authenticate")
-async def authenticate(authentication_data: UserAuthenticationData):
-    async with AsyncSession(engine) as session:
-        user: User = (await session.execute(select(User).filter(User.email == authentication_data.email))).scalars().one()
-        if security.check_password(
-            password=authentication_data.password,
-            salt=user.salt,
-            hashed_password=user.hashed_password,
-        ):
-            if user.id is None:
-                raise Exception("A user without an ID - wtf? This should never happen")
-            token = Token(
-                owner_id=user.id,
-                contents=secrets.token_urlsafe(32),
-                expiration_date=datetime.datetime.now() + TOKEN_EXPIRATION_TIME,
-            )
-            session.add(token)
-            await session.commit()
-            await session.refresh(token)
-            response = JSONResponse({"access_token": token.contents})
-            response.set_cookie("ACCESS_TOKEN", token.contents)
