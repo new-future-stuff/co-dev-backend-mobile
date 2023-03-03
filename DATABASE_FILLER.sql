@@ -83,8 +83,8 @@ INSERT INTO translatedcountryname (country_id, name, language_id) VALUES
     (5, 'Germany', 2);
 
 INSERT INTO user (id, name, hashed_password, salt, profile_picture_url, email) VALUES 
-    (1, 'Александр', '123456', 'salt123', 'https://randomuser.me/api/portraits/men/1.jpg', 'alexander@example.com'),
-    (2, 'Елена', 'abcdef', 'salt456', 'https://randomuser.me/api/portraits/women/1.jpg', 'elena@example.com');
+    (1, 'Александр', x'123456', x'aaa123', 'https://randomuser.me/api/portraits/men/1.jpg', 'alexander@example.com'),
+    (2, 'Елена', x'abcdef', x'aaa456', 'https://randomuser.me/api/portraits/women/1.jpg', 'elena@example.com');
 
 INSERT INTO userskilllink (user_id, skill_id) VALUES 
     (1, 1),
@@ -94,8 +94,8 @@ INSERT INTO userskilllink (user_id, skill_id) VALUES
     (2, 5);
 
 INSERT INTO project (id, name, description, creator_id, reward, currency, logo_url) VALUES 
-    (1, 'Веб-приложение с использованием Django', 'Веб-приложение для управления проектами с использованием фреймворка Django', 1, 2000, 'руб', 'https://cdn.example.com/project1_logo.jpg'),
-    (2, 'Сервис покупки билетов на концерты', 'Сервис, который позволяет заказывать билеты на концерты', 2, 1500, 'руб', 'https://cdn.example.com/project2_logo.jpg');
+    (1, 'Веб-приложение с использованием Django', 'Веб-приложение для управления проектами с использованием фреймворка Django', 1, -1, '', 'https://digitalschoolofmarketing.co.za/wp-content/uploads/2020/01/shutterstock_364801853-e1580301528248-1200x800.png'),
+    (2, 'Сервис покупки билетов на концерты', 'Сервис, который позволяет заказывать билеты на концерты', 2, 1500, 'руб', 'https://ohmymalta.com.mt/wp-content/uploads/2022/12/Theatre_Curtain_Finishes_Explained.jpeg');
 
 INSERT INTO projectskilllink (project_id, skill_id) VALUES 
     (1, 2),
